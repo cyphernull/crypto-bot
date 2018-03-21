@@ -3,6 +3,7 @@
 #### view this app from browser
 
 ```
+yarn install
 yarn start
 ```
 
