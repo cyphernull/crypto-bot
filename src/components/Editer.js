@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { changeMethod } from '../actions/methods'
 import { Card, CardActions, CardHeader } from 'material-ui/Card'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
@@ -16,11 +17,19 @@ class Editer extends Component {
       passphrase: '',
       keySize: 512,
       salt: '',
-      literation: 1000
+      literation: 1000,
+      subtitle: 'MD5'
     }
   }
   componentDidMount() {
-    console.log(CryptoJS)
+    if (localStorage.getItem('method') !== null) {
+      this.props.dispatch(changeMethod(localStorage.getItem('method')))
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      subtitle: this.getSubtitle(nextProps.method)
+    })
   }
   handlePlainChange = e => {
     const plainText = e.target.value
@@ -61,19 +70,33 @@ class Editer extends Component {
       this.setState({
         cipherText
       })
-    }
-    if (this.props.method.indexOf('Hmac') > -1) {
+    } else if (this.props.method.indexOf('Hmac') > -1) {
       const cipherText = CryptoJS[this.props.method](this.state.plainText, this.state.passphrase).toString()
       this.setState({
         cipherText
       })
-    }
-    if (this.props.method.indexOf('EvpKDF') > -1 || this.props.method.indexOf('PBKDF2') > -1) {
+    } else if (this.props.method.indexOf('EvpKDF') > -1 || this.props.method.indexOf('PBKDF2') > -1) {
       const cfg = {
         keySize: this.state.keySize / 32,
         iterations: this.state.literation
       }
       const cipherText = CryptoJS[this.props.method](this.state.plainText, this.state.salt, cfg).toString()
+      this.setState({
+        cipherText
+      })
+    } else if (
+      this.props.method.indexOf('AES') > -1 ||
+      this.props.method.indexOf('DES') > -1 ||
+      this.props.method.indexOf('RC4') > -1 ||
+      this.props.method.indexOf('Rabbit') > -1
+    ) {
+      const key = this.state.passphrase
+      const cipherText = CryptoJS[this.props.method]
+        .encrypt(this.state.plainText, key, {
+          mode: CryptoJS.mode.ECB,
+          padding: CryptoJS.pad.Pkcs7
+        })
+        .toString()
       this.setState({
         cipherText
       })
@@ -84,11 +107,11 @@ class Editer extends Component {
       })
     }
   }
-  getSubtitle = () => {
-    if (this.props.method.indexOf('Hmac') > -1) {
+  getSubtitle = method => {
+    if (method.indexOf('Hmac') > -1) {
       return 'Hash-based Message Authentication Code'
     }
-    switch (this.props.method) {
+    switch (method) {
       case 'MD5':
         return 'Message Digest Algorithm 5'
       case 'SHA1':
@@ -117,11 +140,36 @@ class Editer extends Component {
       keySize: p
     })
   }
+  determineDecryptable = () => {
+    if (
+      this.props.method.indexOf('AES') > -1 ||
+      this.props.method.indexOf('DES') > -1 ||
+      this.props.method.indexOf('RC4') > -1 ||
+      this.props.method.indexOf('Rabbit') > -1
+    ) {
+      return false
+    } else {
+      return true
+    }
+  }
+  handleDecrypt = () => {
+    const cipher = this.state.cipherText
+    const key = this.state.passphrase
+    const plainText = CryptoJS[this.props.method]
+      .decrypt(cipher, key, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      })
+      .toString(CryptoJS.enc.Utf8)
+    this.setState({
+      plainText
+    })
+  }
   render() {
     return (
       <div className="editer">
         <Card>
-          <CardHeader title={this.props.method} subtitle={this.getSubtitle()} />
+          <CardHeader title={this.props.method} subtitle={this.state.subtitle} />
           <CardActions>
             <TextField
               fullWidth={true}
@@ -139,7 +187,11 @@ class Editer extends Component {
                 <MenuItem value={224} primaryText="224" />
               </SelectField>
             ) : null}
-            {this.props.method.indexOf('Hmac') > -1 ? (
+            {this.props.method.indexOf('Hmac') > -1 ||
+            this.props.method.indexOf('AES') > -1 ||
+            this.props.method.indexOf('DES') > -1 ||
+            this.props.method.indexOf('RC4') > -1 ||
+            this.props.method.indexOf('Rabbit') > -1 ? (
               <TextField
                 fullWidth={true}
                 className="text-input"
@@ -186,8 +238,13 @@ class Editer extends Component {
             />
           </CardActions>
           <CardActions className="editer-buttons">
-            <RaisedButton label="加密" primary={true} onClick={this.handleEncrypt} />
-            <RaisedButton label="解密" secondary={true} disabled={true} />
+            <RaisedButton label="加 密" primary={true} onClick={this.handleEncrypt} />
+            <RaisedButton
+              label="解 密"
+              secondary={true}
+              onClick={this.handleDecrypt}
+              disabled={this.determineDecryptable()}
+            />
           </CardActions>
         </Card>
       </div>

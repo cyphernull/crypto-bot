@@ -1,13 +1,5 @@
-# See https://help.github.com/ignore-files/ for more about ignoring files.
-
-# dependencies
 /node_modules
-
-# testing
-/coverage
-
-# production
-/build
+/crypto-bot-darwin-x64
 
 # misc
 .DS_Store

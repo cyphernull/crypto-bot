@@ -12,9 +12,6 @@ class TopBar extends Component {
       open: false
     }
   }
-  componentDidUpdate() {
-    console.log(this.props.method)
-  }
   handleClickLeft = () => {
     this.setState({
       open: true
@@ -28,6 +25,7 @@ class TopBar extends Component {
   handleClickItem = (e, m) => {
     const cryptoMethod = m.props.children
     this.props.dispatch(changeMethod(cryptoMethod))
+    localStorage.setItem('method', cryptoMethod)
   }
   render() {
     return (
@@ -91,6 +89,18 @@ class TopBar extends Component {
             </MenuItem>
             <MenuItem onClick={this.handleClose} checked={'PBKDF2' === this.props.method}>
               PBKDF2
+            </MenuItem>
+            <MenuItem onClick={this.handleClose} checked={'AES' === this.props.method}>
+              AES
+            </MenuItem>
+            <MenuItem onClick={this.handleClose} checked={'DES' === this.props.method}>
+              DES
+            </MenuItem>
+            <MenuItem onClick={this.handleClose} checked={'RC4' === this.props.method}>
+              RC4
+            </MenuItem>
+            <MenuItem onClick={this.handleClose} checked={'Rabbit' === this.props.method}>
+              Rabbit
             </MenuItem>
           </Menu>
         </Drawer>
