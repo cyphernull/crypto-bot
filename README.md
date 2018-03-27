@@ -1,4 +1,6 @@
-#### for fun
+#### for fun :)
+
+![logo](crypto-bot-icon.png)
 
 #### view this app from browser
 
@@ -18,4 +20,10 @@ electron .
 
 ```
 electron-packager . --electron-version=1.8.4  --platform=darwin --icon=./logo.icns --arch=x64 --ignore=node_modules/ --appname=CryptoBot --overwrite
+```
+
+#### package for win32
+
+```
+electron-packager . --electron-version=1.8.4  --platform=win32 --arch=x64 --ignore=node_modules/ --appname=CryptoBot --overwrite
 ```
