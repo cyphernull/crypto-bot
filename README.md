@@ -33,3 +33,5 @@ electron-packager . --electron-version=1.8.4  --platform=win32 --arch=x64 --igno
 ```
 electron-packager . --electron-version=1.8.4  --platform=linux --arch=x64 --ignore=node_modules/ --appname=CryptoBot --overwrite
 ```
+
+there may have some issues with the performance on win
