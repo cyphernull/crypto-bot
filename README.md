@@ -1,6 +1,6 @@
 #### for fun :)
 
-![logo](crypto-bot-icon.png)
+![logo](logo-readme.png)
 
 #### view this app from browser
 
