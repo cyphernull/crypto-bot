@@ -1,8 +1,8 @@
-#### It's for encrypting your messages
+### It's for encrypting and decrypting your messages
 
-**CryptoBot uses CryptoJS on most of the encrytion methods. You can use this application to view these encrytion and decryption process without headache.**
+CryptoBot uses CryptoJS on most of the encrytion methods. You can use this application to view these encrytion and decryption process without headache.
 
-#### for fun :)
+#### For fun :)
 
 ![logo](logoban.png)
 
